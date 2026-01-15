@@ -1,0 +1,201 @@
+
+================================================================================
+                        NUMPY CHEATSHEET FOR ML (BUET EXAM)
+================================================================================
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                              ARRAY CREATION                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+1. BASIC ARRAYS:
+   np.array([1,2,3])                    → 1D array [1 2 3]
+   np.array([[1,2],[3,4]])              → 2D array [[1 2], [3 4]]
+   np.zeros((m,n))                      → m×n array of zeros
+   np.ones((m,n))                       → m×n array of ones
+   np.full((m,n), value)                → Fill with specified value
+   np.eye(n)                            → n×n identity matrix
+   np.arange(start, stop, step)         → Like range() but returns array
+   np.linspace(start, stop, num)        → num equally spaced values
+   np.random.rand(m,n)                  → Uniform random [0,1)
+   np.random.randn(m,n)                 → Normal random (μ=0, σ=1)
+   np.random.randint(low, high, size)   → Random integers
+
+2. IMPORTANT FOR ML:
+   X = np.random.randn(100, 10)         # 100 samples, 10 features
+   y = np.random.randint(0, 2, 100)     # Binary labels
+   weights = np.zeros(10)               # Initialize weights
+   bias = np.zeros(1)                   # Initialize bias
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          ARRAY PROPERTIES & INFO                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+arr.shape                               → Tuple of dimensions (rows, cols)
+arr.ndim                                → Number of dimensions
+arr.size                                → Total number of elements
+arr.dtype                               → Data type (int64, float64, etc.)
+arr.T or arr.transpose()                → Transpose
+arr.reshape(new_shape)                  → Reshape (no data copy if possible)
+arr.flatten()                           → Flatten to 1D (copy)
+arr.ravel()                             → Flatten to 1D (view if possible)
+
+EXAMPLES:
+   X.shape      → (100, 10)   # For ML datasets
+   X.T.shape    → (10, 100)   # Transpose for dot products
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         INDEXING & SLICING (CRITICAL!)                       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+1. BASIC INDEXING:
+   arr[0]                               → First element (row if 2D)
+   arr[0, 1]                            → Element at row 0, column 1
+   arr[:, 1]                            → All rows, column 1
+   arr[1, :]                            → Row 1, all columns
+
+2. SLICING:
+   arr[start:stop:step]                 → Basic slice
+   arr[:3]                              → First 3 rows
+   arr[-3:]                             → Last 3 rows
+   arr[:, ::2]                          → Every other column
+   arr[::-1]                            → Reverse order
+
+3. BOOLEAN INDEXING (ML IMPORTANT):
+   mask = arr > 5                       → Boolean mask
+   arr[mask]                            → Elements where mask is True
+   arr[(arr > 2) & (arr < 8)]           → Multiple conditions
+   arr[~(arr > 5)]                      → NOT condition
+   arr[np.isnan(arr)]                   → Find NaN values
+
+4. FANCY INDEXING:
+   arr[[0, 2, 4]]                       → Rows 0, 2, 4
+   arr[:, [1, 3, 5]]                    → Columns 1, 3, 5
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     ARRAY OPERATIONS (ML FOCUSED)                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+1. ELEMENT-WISE OPERATIONS:
+   arr1 + arr2, arr1 - arr2, arr1 * arr2, arr1 / arr2
+   arr ** 2                             → Square each element
+   np.sqrt(arr)                         → Square root
+   np.exp(arr)                          → Exponential
+   np.log(arr)                          → Natural log
+   np.abs(arr)                          → Absolute value
+   np.sin(arr), np.cos(arr), np.tan(arr)
+
+2. AGGREGATION FUNCTIONS (for loss functions):
+   arr.sum()                            → Sum of all elements
+   arr.mean()                           → Mean (average)
+   arr.std()                            → Standard deviation
+   arr.var()                            → Variance
+   arr.min(), arr.max()                 → Min and max
+   arr.argmin(), arr.argmax()           → Index of min/max
+   np.median(arr)                       → Median
+   np.percentile(arr, q)                → qth percentile
+
+3. MATRIX OPERATIONS (ML CRITICAL):
+   np.dot(A, B) or A @ B                → Matrix multiplication
+   np.matmul(A, B)                      → Matrix multiplication
+   np.linalg.inv(A)                     → Matrix inverse
+   np.linalg.pinv(A)                    → Pseudo-inverse
+   np.linalg.det(A)                     → Determinant
+   np.linalg.eig(A)                     → Eigenvalues/vectors
+   np.linalg.norm(x)                    → Vector norm (L2 by default)
+   np.linalg.norm(x, ord=1)             → L1 norm
+
+4. BROADCASTING RULES:
+   • Trailing dimensions must match OR be 1
+   Example: (3,4) + (4,) works → (4,) becomes (1,4)
+   Example: (2,3) + (3,1) works
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         LINEAR ALGEBRA FOR ML                                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+1. SOLVING LINEAR EQUATIONS:
+   # Solve Ax = b
+   x = np.linalg.solve(A, b)
+
+2. LEAST SQUARES (Linear Regression):
+   # Solve min ||Ax - b||²
+   x = np.linalg.lstsq(A, b, rcond=None)[0]
+
+3. EIGENDECOMPOSITION (PCA):
+   eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
+   # Sort eigenvectors by eigenvalues
+   idx = eigenvalues.argsort()[::-1]
+   eigenvalues = eigenvalues[idx]
+   eigenvectors = eigenvectors[:, idx]
+
+4. SVD (Dimensionality Reduction):
+   U, S, Vt = np.linalg.svd(X, full_matrices=False)
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         STATISTICAL FUNCTIONS                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+np.mean(arr, axis=0)                    → Mean along axis
+np.std(arr, axis=1)                     → Std along axis
+np.cov(X)                               → Covariance matrix
+np.corrcoef(X)                          → Correlation matrix
+np.histogram(arr, bins=10)              → Histogram
+np.unique(arr, return_counts=True)      → Unique values with counts
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        COMMON ML PATTERNS                                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+1. FEATURE NORMALIZATION:
+   X_normalized = (X - X.mean(axis=0)) / X.std(axis=0)
+
+2. ONE-HOT ENCODING:
+   y_one_hot = np.eye(num_classes)[y]
+
+3. TRAIN-TEST SPLIT:
+   indices = np.random.permutation(len(X))
+   train_idx, test_idx = indices[:80], indices[80:]
+
+4. GRADIENT DESCENT UPDATE:
+   weights = weights - learning_rate * gradient
+
+5. SIGMOID FUNCTION:
+   def sigmoid(z):
+       return 1 / (1 + np.exp(-z))
+
+6. SOFTMAX FUNCTION:
+   def softmax(z):
+       exp_z = np.exp(z - np.max(z))
+       return exp_z / exp_z.sum(axis=1, keepdims=True)
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          COMMON PITFALLS                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+1. VIEW vs COPY:
+   arr_view = arr[:3]      → View (changes affect original)
+   arr_copy = arr[:3].copy() → Copy (independent)
+
+2. BROADCASTING ERRORS:
+   # Wrong: (3,4) + (3,) doesn't work
+   # Fix: (3,4) + (3,1) works
+
+3. MATRIX MULTIPLICATION:
+   # Wrong for 1D arrays: a * b (element-wise)
+   # Correct: np.dot(a, b) or a @ b
+
+4. NaN HANDLING:
+   np.nan == np.nan        → False (use np.isnan())
+   np.isnan(arr).any()     → Check for any NaN
+   np.nan_to_num(arr)      → Replace NaN with 0
+
+================================================================================
+                      BUET ML EXAM - NUMPY KEY POINTS
+================================================================================
+• Use arr.reshape(-1, 1) to convert 1D to column vector
+• X.dot(weights) for linear combinations
+• Keep dimensions in mind for broadcasting
+• Use np.random.seed() for reproducibility
+• Prefer vectorized operations over loops
+• Remember: axis=0 → rows, axis=1 → columns
+================================================================================
